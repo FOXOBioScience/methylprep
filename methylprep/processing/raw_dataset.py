@@ -141,6 +141,7 @@ class RawDataset():
     def get_channel_means(self, channel):
         if not isinstance(channel, Channel):
             raise TypeError('channel is not a valid Channel')
+        # --- always same for mouse, so not buggy here --- print('channel_means GRN,RED', self.green_idat.probe_means.shape, self.green_idat.probe_means.shape)
         if channel is Channel.GREEN:
             return self.green_idat.probe_means
         return self.red_idat.probe_means

@@ -101,6 +101,20 @@ class Manifest():
 
         with get_file_object(filepath_or_buffer) as manifest_file:
             self.__data_frame = self.read_probes(manifest_file)
+
+            """ cleaning up the manifest did not have any effect on the 15724 missing probes. (12-11-2020)
+            if self.array_type == ArrayType('mouse'):
+                print(f"DEBUG mouse manifest: changing 'Both' to NaN in Color_Channel.")
+                pre = dict(self.__data_frame['Color_Channel'].value_counts())
+                pre_na = self.__data_frame['Color_Channel'].isna().sum()
+                # note: RED are ctl-red.
+                self.__data_frame['Color_Channel'] = self.__data_frame['Color_Channel'].replace({'Both':np.nan})
+                # drop unused ctl probes
+                droprows = self.__data_frame[self.__data_frame.index.str[:3] == 'ctl'].index
+                self.__data_frame = self.__data_frame.drop(droprows, axis=0)
+                print(f"DEBUG pre {pre} na {pre_na} ----vs post---- {dict(self.__data_frame['Color_Channel'].value_counts())}, na {self.__data_frame['Color_Channel'].isna().sum()}")
+            """
+
             self.__control_data_frame = self.read_control_probes(manifest_file)
             self.__snp_data_frame = self.read_snp_probes(manifest_file)
             if self.array_type == ArrayType.ILLUMINA_MOUSE:

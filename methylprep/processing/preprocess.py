@@ -35,13 +35,24 @@ class BackgroundCorrectionParams():
 def preprocess_noob(data_container):
     """ the main preprocessing function. Applies background-subtraction and
     NOOB. Sets data_container.methylated and unmethylated values for sample."""
-    #LOGGER.info('NOOB: %s', data_container.sample)
+
+    #LOGGER.info(f"DEBUG NOOB: {data_container.sample} {data_container.fg_green.shape} {data_container.fg_red.shape} {data_container.ctrl_green.shape} {data_container.ctrl_red.shape} {data_container.oob_green.shape} {data_container.oob_red.shape}")
 
     bg_correct_green, params_green = normexp_bg_corrected(data_container.fg_green, data_container.oob_green)
     bg_correct_red, params_red = normexp_bg_corrected(data_container.fg_red, data_container.oob_red)
 
+    #LOGGER.info(f"bg_correct_green {bg_correct_green.shape} bg_correct_red {bg_correct_red.shape}")
+    #try:
+    #    LOGGER.info(f"1 'cg39970707_BC21' shape {data_container.methylated.data_frame.loc['cg39970707_BC21'].shape}")
+    #except KeyError:
+    #    LOGGER.info(f"--")
+
     data_container.methylated.set_bg_corrected(bg_correct_green, bg_correct_red)
     data_container.unmethylated.set_bg_corrected(bg_correct_green, bg_correct_red)
+    #try:
+    #    LOGGER.info(f"2 'cg39970707_BC21' shape {data_container.methylated.data_frame.loc['cg39970707_BC21'].shape}")
+    #except KeyError:
+    #    LOGGER.info(f"--")
 
     ctrl_green = normexp_bg_correct_control(data_container.ctrl_green, params_green)
     ctrl_red = normexp_bg_correct_control(data_container.ctrl_red, params_red)
@@ -53,11 +64,18 @@ def preprocess_noob(data_container):
     avg_red = ctrl_red[mask_red]['bg_corrected'].mean()
 
     rg_ratios = avg_red / avg_green
-
     red_factor = 1 / rg_ratios
 
     data_container.methylated.set_noob(red_factor)
     data_container.unmethylated.set_noob(red_factor)
+
+    #LOGGER.info(f"avg_green {avg_green} avg_red {avg_red}")
+    #LOGGER.info(f"rg_ratios {rg_ratios} red_factor {red_factor}")
+    #LOGGER.info(data_container.methylated.data_frame.head())
+    #try:
+    #    LOGGER.info(data_container.methylated.data_frame.loc['cg39970707_BC21'])
+    #except KeyError:
+    #    LOGGER.info(f"--")
 
 
 def normexp_bg_corrected(fg_probes, ctrl_probes):
